@@ -11,7 +11,6 @@ import { AppService } from './app.service';
 
 @Module({
   imports: [
-    TodoModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -29,6 +28,7 @@ import { AppService } from './app.service';
     }),
     UsersModule,
     AuthModule,
+    TodoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
