@@ -1,16 +1,49 @@
-import { Controller, Get } from '@nestjs/common';
-import { UsersService } from './users.service';
+// region nest
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { CreateUserDto } from './dtos/create-user.dto';
+// endregion
 
-@Controller()
+// region users
+import { UsersService } from './users.service';
+// endregion
+
+@Controller('users')
 export class UsersController {
 
   constructor(
-    // private readonly usersService: UsersService,
-  ) {}
+    private readonly usersService: UsersService,
+  ) { }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  getHello() {
-    // return this.usersService.getHello();
+  async getUsers(): Promise<CreateUserDto[] | string> {
+    return this.usersService.getAllUsers();
+  }
+
+  // @Get('/:id')
+  // async getUser(@Param('id') id: number): Promise<Users | string> {
+  //   return this.usersService.getUser(id);
+  // }
+
+  @Get('/:email')
+  async getUserByEmail(@Param('email') email: string) {
+    return this.usersService.getUserByEmail(email);
+  }
+
+  @Post()
+  @UseInterceptors(FileInterceptor(''))
+  async createUser(@Body() body: CreateUserDto): Promise<string> {
+    return await this.usersService.createUser(body);
   }
 
 

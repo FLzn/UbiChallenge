@@ -1,6 +1,6 @@
+import { TodoModule } from './to-do/todo.module';
+import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { UsersService } from './users/users.service';
-import { UsersController } from './users/users.controller';
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,20 +14,21 @@ import { AppService } from './app.service';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'challenge-ubi',
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       entities: [
         "src/entities/**/*.ts"
       ],
       synchronize: false,
       autoLoadEntities: true,
-      logging: true
+      logging: false
     }),
     UsersModule,
-
+    AuthModule,
+    TodoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
