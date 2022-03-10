@@ -1,9 +1,16 @@
+// region nest
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+// endregion
+
+// region 3rd
 import { compareSync } from 'bcrypt';
+// endregion
+
+// region users
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
-// import { AuthLoginDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
+// endregion
 
 @Injectable()
 export class AuthService {
@@ -15,9 +22,9 @@ export class AuthService {
     async validateUser(userEmail: string, userPassword: string): Promise<any> {
       
       const user = await this.usersService.getUserByEmail(userEmail);
-      // const passwordIsValid = compareSync(userPassword, user.password);
+      const passwordIsValid = compareSync(userPassword, user.password);
 
-      if (user && user.password === userPassword) {
+      if (user && passwordIsValid) {
         const { password, ...result } = user;
         
         return result;

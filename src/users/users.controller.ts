@@ -6,13 +6,14 @@ import {
   Param,
   Post,
   UseGuards,
-  Request
+  UseInterceptors,
 } from '@nestjs/common';
-import { LocalAuthGuard } from 'src/auth/local-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { CreateUserDto } from './dtos/create-user.dto';
 // endregion
 
 // region users
-import { Users } from './entities/users.entity';
 import { UsersService } from './users.service';
 // endregion
 
@@ -23,8 +24,9 @@ export class UsersController {
     private readonly usersService: UsersService,
   ) { }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  async getUsers(): Promise<Users[]> {
+  async getUsers(): Promise<CreateUserDto[] | string> {
     return this.usersService.getAllUsers();
   }
 
@@ -34,13 +36,14 @@ export class UsersController {
   // }
 
   @Get('/:email')
-  async getUserByEmail(@Param('email') email: string): Promise<any> {
+  async getUserByEmail(@Param('email') email: string) {
     return this.usersService.getUserByEmail(email);
   }
 
   @Post()
-  async createUser(@Body() body: Users) {
-    await this.usersService.createUser(body);
+  @UseInterceptors(FileInterceptor(''))
+  async createUser(@Body() body: CreateUserDto): Promise<string> {
+    return await this.usersService.createUser(body);
   }
 
 

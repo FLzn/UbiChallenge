@@ -1,7 +1,18 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
+// region nest
+import {
+  Injectable,
+  UnauthorizedException
+} from '@nestjs/common';
+// endregion
+
+// region jwt
+import {
+  ExtractJwt,
+  Strategy
+} from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
 import { jwtConstants } from '../consts';
+// endregion
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -14,6 +25,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
+
+    if (!payload) {
+      throw new UnauthorizedException();
+    }
     return payload;
   }
 }
