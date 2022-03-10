@@ -1,6 +1,5 @@
+import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { UsersService } from './users/users.service';
-import { UsersController } from './users/users.controller';
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -24,10 +23,10 @@ import { AppService } from './app.service';
       ],
       synchronize: false,
       autoLoadEntities: true,
-      logging: true
+      logging: false
     }),
     UsersModule,
-
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

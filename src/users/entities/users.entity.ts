@@ -3,38 +3,38 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 @Entity()
 export class Users {
   @PrimaryColumn({
-    name: 'id',
+    name: 'in_id',
     nullable: false,
     type: 'integer',
   })
   id: number;
 
   @Column({
-    name: 'name',
+    name: 'st_name',
     nullable: false,
     type: "varchar",
-    length: 100
+    length: 255
   })
   name: string;
 
   @Column({
-    name: 'email',
+    name: 'st_email',
     nullable: false,
     type: 'varchar',
-    length: 100
+    length: 255
   })
   email: string;
 
   @Column({
-    name: 'password',
+    name: 'st_password',
     nullable: false,
     type: 'varchar',
-    length: 100
+    length: 255
   })
   password: string;
 
   @Column({
-    name: 'admin',
+    name: 'bl_admin',
     nullable: false,
     type: 'boolean',
   })
