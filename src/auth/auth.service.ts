@@ -14,36 +14,35 @@ import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private usersService: UsersService,
-        private jwtService: JwtService
-    ) {}
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService
+  ) { }
 
-    async validateUser(userEmail: string, userPassword: string): Promise<any> {
-      
-      const user = await this.usersService.getUserByEmail(userEmail);
-      const passwordIsValid = compareSync(userPassword, user.password);
+  async validateUser(userEmail: string, userPassword: string): Promise<any> {
 
-      if (user && passwordIsValid) {
-        const { password, ...result } = user;
-        
-        return result;
-      }
+    const user = await this.usersService.getUserByEmail(userEmail);
+    const passwordIsValid = compareSync(userPassword, user.password);
 
-      return null;
-
+    if (user && passwordIsValid
+    ) {
+      const { password, ...result } = user;
+      return result;
     }
 
-    async login(user: Partial<CreateUserDto>) {
-      
-      const payload = user;
+    return null;
+  }
 
-      // Set login id to payload
-      // payload.idLogin = saveLoginDb.id;
+  async login(user: Partial<CreateUserDto>) {
+    const payload = user;
 
-      return {
-        access_token: this.jwtService.sign(payload)
-      }
-
+    return {
+      access_token: this.jwtService.sign(payload)
     }
+  }
+
+  getJwt(jwt: string) {
+    return this.jwtService.decode(jwt);
+  }
+
 }

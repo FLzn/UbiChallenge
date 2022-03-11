@@ -1,3 +1,4 @@
+import { Role } from "src/enums/role.enum";
 import {
   Column,
   Entity,
@@ -7,9 +8,9 @@ import {
 @Entity()
 export class Users {
   @PrimaryColumn({
-    name: 'in_id',
+    name: 'in_id_user',
     nullable: false,
-    type: 'integer',
+    type: 'int',
   })
   id: number;
 
@@ -38,10 +39,11 @@ export class Users {
   password: string;
 
   @Column({
-    name: 'bl_admin',
+    name: 'en_role',
     nullable: false,
-    type: 'boolean',
+    type: 'enum',
+    enum: ['admin','user']
   })
-  admin: boolean;
+  role: Role;
 
 }
