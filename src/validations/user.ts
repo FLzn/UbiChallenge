@@ -11,10 +11,11 @@ export async function validateUser(userRequest: CreateUserDto, usersModel: any):
     email: '',
     name: '',
     password: '',
+    role: ''
   }
     if (userRequest) {
 
-      const { name, email, password, admin } = userRequest;
+      const { name, email, password, role } = userRequest;
       // validar se não existe no banco
       const userEmail = await usersModel.findOne({
         where: {
@@ -37,10 +38,14 @@ export async function validateUser(userRequest: CreateUserDto, usersModel: any):
       if (diffName) {
         ERRORS.name = 'Nome inválido.';
       };
+      if (role !== 'admin' && role !== 'user') {
+        ERRORS.role = 'Cargo inválido. Valores válidos: (user, admin).';
+      }
       
       const EMAIL_ERROR = (!!get(ERRORS, 'email') && 'email' || '');
       const NAME_ERROR = (!!get(ERRORS, 'name') && 'name' || '');
       const PASSWORD_ERROR = (!!get(ERRORS, 'password') && 'password' || '');
+      const ROLE_ERROR = (!!get(ERRORS, 'role') && 'role' || '');
 
       // console.log(CPF_ERROR);
       // console.log(PASSWORD_ERROR);
@@ -51,6 +56,7 @@ export async function validateUser(userRequest: CreateUserDto, usersModel: any):
       let error: any =  EMAIL_ERROR
         || NAME_ERROR
         || PASSWORD_ERROR
+        || ROLE_ERROR
         || '';
 
       const ok = error === '';

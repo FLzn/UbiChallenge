@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/custom-decorators/roles.decorator';
+import { Role } from 'src/enums/role.enum';
 import { CreateUserDto } from './dtos/create-user.dto';
 // endregion
 
@@ -25,6 +27,7 @@ export class UsersController {
   ) { }
 
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.Admin)
   @Get()
   async getUsers(): Promise<CreateUserDto[] | string> {
     return this.usersService.getAllUsers();

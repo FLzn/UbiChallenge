@@ -1,6 +1,8 @@
 import { Controller, 
   Get, 
-  Post} from '@nestjs/common';
+  Post,
+  UseGuards} from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { TodoService } from './todo.service';
 
 @Controller('todo')
@@ -10,6 +12,7 @@ export class TodoController {
     private readonly todoService: TodoService,
   ) { }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getTodo() {
     return this.todoService.getTodo();
@@ -17,7 +20,7 @@ export class TodoController {
 
   @Post()
   async createTodo() {
-    await this.todoService.createTodo();
+    // await this.todoService.createTodo();
   }
 
 }
