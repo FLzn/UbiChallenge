@@ -1,17 +1,15 @@
 import { Role } from "src/enums/role.enum";
+import { Todo } from "src/to-do/entities/todo.entity";
 import {
   Column,
   Entity,
-  PrimaryColumn
+  OneToMany,
+  PrimaryGeneratedColumn
 } from "typeorm";
 
 @Entity()
 export class Users {
-  @PrimaryColumn({
-    name: 'in_id_user',
-    nullable: false,
-    type: 'int',
-  })
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column({
@@ -45,5 +43,8 @@ export class Users {
     enum: ['admin','user']
   })
   role: Role;
+
+  @OneToMany(() => Todo, todo => todo.user)
+  todos: Todo[];
 
 }
