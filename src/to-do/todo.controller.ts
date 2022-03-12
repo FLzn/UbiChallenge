@@ -47,4 +47,10 @@ export class TodoController {
     return await this.todoService.updateTodo(body, id, userId);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('/users')
+  async getUserTodos(@Headers() headers) {
+    return await this.todoService.getUserTodos(headers.authorization);
+  }
+
 }

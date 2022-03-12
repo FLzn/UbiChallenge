@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { get } from 'lodash'
 import { validateTodo } from 'src/validations/todo';
 import { Repository } from 'typeorm';
-import CreateTodoDto from './dtos/create-todo.dto';
 import { Todo } from './entities/todo.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { isAfter, getDate } from '../utils/getDate'
@@ -16,10 +15,12 @@ export class TodoService {
     private authService: AuthService
   ) { }
 
+  // rota para o admin pegar todos os TODOS
   async getTodo() {
     return await this.todoModel.find();
   }
 
+  // rota para criar todo
   async createTodo(todoRequest: any, headers) {
     try {
       const newTodoValidation = await validateTodo(todoRequest, this.todoModel);
@@ -29,19 +30,13 @@ export class TodoService {
         throw new Error(get(newTodoValidation, `errors.${mainError}`));
       }
 
-      // moment
-      // moment.locale('pt-br');
-      // const newDeadline: string = moment(todoRequest.deadline).format('LTS');
-      // const createdAt: string = moment().format('DD/MM/YYYY HH:mm:ss');
-      // fim moment
-
       // date js
       const newDeadline: string = getDate(todoRequest.deadline);
       const createdAt: string = getDate();
 
+      // const jwt: any = this.authService.getJwt(token);
       const token: string = headers.authorization.split(' ')[1];
-      const jwt: any = this.authService.getJwt(token);
-      const userId: number = jwt.id;
+      const userId = this.authService.getUserIdInsideJwt(token);
 
       todoRequest.createdAt = createdAt;
       todoRequest.updatedAt = createdAt;
@@ -66,11 +61,10 @@ export class TodoService {
     }
   }
 
+  // rota para dar update no TODO
   async updateTodo(todoUpdateRequest, id, userId) {
-    try {
-      console.log('UserId: ',userId)
+    try {      
       const newTodoValidation = await validateTodo(todoUpdateRequest, this.todoModel);
-
       if (!newTodoValidation.ok) {
         const mainError = newTodoValidation.error;
         throw new Error && new(get(newTodoValidation, `errors.${mainError}`));
@@ -100,10 +94,8 @@ export class TodoService {
       } else if (todoUpdateRequest !== 'Finalizado' && oldTodo.status !== 'Finalizado') {
         todoUpdateRequest.status = 'Aberto';
       }      
-
       todoUpdateRequest.updatedAt = getDate();
 
-      console.log(todoUpdateRequest);
       await this.todoModel.createQueryBuilder()
         .update(Todo)
         .set({ 
@@ -120,12 +112,19 @@ export class TodoService {
         })
         .execute()
       return 'Tarefa alterada com sucesso!';
-
     } catch (err) {
       return err.message;
     }
   }
 
-
+  // rota para o usuário conseguir ver apenas as suas tasks
+  async getUserTodos(headerAuth) {
+    const idUser = this.authService.getUserIdInsideJwt(headerAuth);
+    return await this.todoModel.find({
+      where: {
+        userId: idUser
+      }
+    });
+  }
 
 }
