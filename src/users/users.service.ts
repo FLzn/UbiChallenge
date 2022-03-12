@@ -66,8 +66,8 @@ export class UsersService {
             })
           });
         }else {
-          const mainError = newUser.error
-          throw new Error(get(newUser, `errors.${mainError}`))
+          const mainError = newUser.error;
+          throw new Error(get(newUser, `errors.${mainError}`));
         }
         return 'Usuário salvo com sucesso!';
     } catch (err) {

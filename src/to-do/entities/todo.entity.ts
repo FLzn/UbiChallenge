@@ -1,67 +1,77 @@
+import { Status } from "src/enums/status.enum";
 import { Users } from "src/users/entities/users.entity";
 import {
   Column,
   Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryColumn
+  ManyToOne,
+  PrimaryGeneratedColumn
 } from "typeorm";
 
 @Entity()
 export class Todo {
-  @PrimaryColumn({
-    name: 'in_id',
-    nullable: false,
-    type: 'integer',
-  })
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column({
-    name: 'st_status',
+    name: 'en_status',
     nullable: false,
-    type: "varchar",
-    length: 100
+    type: 'enum',
+    enum: ['Aberto','Finalizado', 'Atrasado']
   })
-  status: string;
+  status: Status;
 
   @Column({
-    name: 'st_descricao',
+    name: 'st_title',
+    nullable: false,
+    type: 'varchar',
+    length: 100
+  })
+  title: string;
+
+  @Column({
+    name: 'st_description',
     nullable: true,
     type: 'varchar',
     length: 255
   })
-  descricao: string;
+  description: string;
 
   @Column({
     name: 'createdAt',
     nullable: true,
     type: 'timestamp'
   })
-  createdAt: Date;
+  createdAt: string;
 
   @Column({
     name: 'updatedAt',
     nullable: true,
     type: 'timestamp'
   })
-  updatedAt: Date;
+  updatedAt: string;
 
   @Column({
     name: 'finalizedAt',
     nullable: true,
     type: 'timestamp'
   })
-  finalizedAt: Date;
+  finalizedAt: string;
 
   @Column({
-    name: 'dt_prazo',
+    name: 'dt_deadline',
     nullable: true,
     type: 'timestamp'
   })
-  prazo: string;
+  deadline: string;
 
-  @OneToOne(() => Users)
-  @JoinColumn()
-  users: Users;
+  @Column({
+    name: 'userId',
+    nullable: true,
+    type: 'integer'
+  })
+  userId: number;
+
+  @ManyToOne(() => Users, user => user.id)
+  user: Users;
 
 }
