@@ -100,9 +100,9 @@ export class TodoService {
 
       await this.todoModel.save(todoRequest);
       todoRequest.message = 'Tarefa criada com sucesso!';
-      throw new HttpException('Usuário criado com sucesso!', HttpStatus.CREATED);
+      throw new HttpException('TODO criado com sucesso!', HttpStatus.CREATED);
     } catch (err) {
-      throw new HttpException('Ocorreu um erro, tente novamente!', HttpStatus.BAD_REQUEST);
+      return err.message;
     }
   }
 
