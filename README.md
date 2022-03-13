@@ -7,7 +7,6 @@
   <li>Rodar o container criado</li>
   <li>Adicionar uma nova conexão no dbeaver com mysql, colocando as informações do container criado acima</li>
   <li>Caso necessário, ir em "Driver properties" e mudar a chave "allowPublicKeyRetrieval" de false para true</li>
-  <li>Caso necessário, ir em "Driver properties" e mudar a chave "allowPublicKeyRetrieval" de false para true</li>
   <li>Dentro da conexão criada, criar um banco com o nome "challenge-ubi"</li>
 </ul>
 
