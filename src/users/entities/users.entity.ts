@@ -46,5 +46,4 @@ export class Users {
 
   @OneToMany(() => Todo, todo => todo.user)
   todos: Todo[];
-
 }

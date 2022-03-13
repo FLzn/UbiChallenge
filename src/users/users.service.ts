@@ -31,8 +31,8 @@ export class UsersService {
     try {
       const users = await this.usersModel.find();
       return users ? users : 'Usuários não encontrados!';
-    } catch (error) {
-      return error
+    } catch (err) {
+      return err.message;
     }
   }
 
@@ -46,17 +46,9 @@ export class UsersService {
         }
       );
       return user ? user : 'Usuário não encontrado!';
-    } catch (error) {
-      return error;
+    } catch (err) {
+      return err;
     }
-  }
-
-  async getUserById(id: number) {
-    return this.usersModel.findOne({
-      where: {
-        id: id
-      }
-    })
   }
 
   async createUser(userRequest: CreateUserDto) {
@@ -72,7 +64,7 @@ export class UsersService {
               this.usersModel.save(userRequest);
             })
           });
-        }else {
+        } else {
           const mainError = newUser.error;
           throw new Error(get(newUser, `errors.${mainError}`));
         }

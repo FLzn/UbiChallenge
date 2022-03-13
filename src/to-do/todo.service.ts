@@ -1,13 +1,31 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+// region nest
+import {
+  HttpException,
+  HttpStatus,
+  Injectable
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+// endregion
+
+// region 3rd
 import { get } from 'lodash'
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination
+} from 'nestjs-typeorm-paginate';
+// endregion
+
+// region others
 import { validateTodo } from 'src/validations/todo';
 import { Repository } from 'typeorm';
 import { Todo } from './entities/todo.entity';
 import { AuthService } from 'src/auth/auth.service';
-import { isAfter, getDate } from '../utils/getDate'
-import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
-import { UsersService } from 'src/users/users.service';
+import {
+  isAfter,
+  getDate
+} from '../utils/getDate'
+// endregion
 
 @Injectable()
 export class TodoService {
@@ -15,44 +33,40 @@ export class TodoService {
     @InjectRepository(Todo)
     private todoModel: Repository<Todo>,
     private authService: AuthService,
-    private userService: UsersService,
   ) { }
 
-  // teste paginate
-  async paginate(options: IPaginationOptions): Promise<Pagination<Todo>> {
-    const qb = this.todoModel.createQueryBuilder('t');
-    qb.orderBy('t.id', 'DESC');
-
-    return paginate<Todo>(this.todoModel, options);
-  }
-
-  async getTodosAtrasados(options: IPaginationOptions, headers): Promise<Pagination<Todo>> {
-    const objUser: any = this.authService.getUserIdInsideJwt(headers.authorization);
-    const userId = objUser.id;
-    const queryBuilder = this.todoModel.createQueryBuilder('t');
-    queryBuilder.select(['t.title', 't.description', 't.deadline', 'users.email']);
-    queryBuilder.innerJoin("t.user", "users")
-    queryBuilder.where({
-      userId: userId,
-      status: "Atrasado"
-    });
-    queryBuilder.orderBy('t.deadline', 'ASC');
-    return paginate<Todo>(queryBuilder, options);
+  async getTodosAtrasados(options: IPaginationOptions): Promise<Pagination<Todo>> {
+    try {
+      const queryBuilder = this.todoModel.createQueryBuilder('t');
+      queryBuilder.select(['t.title', 't.description', 't.deadline', 'users.email']);
+      queryBuilder.innerJoin("t.user", "users");
+      queryBuilder.where({
+        status: "Atrasado"
+      });
+      queryBuilder.orderBy('t.deadline', 'ASC');
+      return paginate<Todo>(queryBuilder, options);
+    } catch (err) {
+      return err.message;
+    }
   }
 
   // rota para o admin pegar todos os TODOS
   async getTodo(options: IPaginationOptions): Promise<Pagination<Todo>> {
-    const queryBuilder = this.todoModel.createQueryBuilder('t');
-    queryBuilder.select(['t.title', 't.description', 't.deadline', 'users.email']);
-    queryBuilder.innerJoin("t.user", "users")
-    queryBuilder.orderBy('t.deadline', 'ASC');
-    return paginate<Todo>(queryBuilder, options);
+    try {
+      const queryBuilder = this.todoModel.createQueryBuilder('t');
+      queryBuilder.select(['t.title', 't.description', 't.deadline', 'users.email']);
+      queryBuilder.innerJoin("t.user", "users");
+      queryBuilder.orderBy('t.deadline', 'ASC');
+      return paginate<Todo>(queryBuilder, options);
+    } catch (err) {
+      return err.message;
+    }
   }
 
   // rota para criar todo
   async createTodo(todoRequest: any, headers) {
     try {
-      const newTodoValidation = await validateTodo(todoRequest, this.todoModel);
+      const newTodoValidation = await validateTodo(todoRequest);
 
       if (!newTodoValidation.ok) {
         const mainError = newTodoValidation.error;
@@ -73,17 +87,19 @@ export class TodoService {
       todoRequest.userId = userId;
       todoRequest.deadline = newDeadline;
 
-      // conferir se o prazo não está atrasado
-      // Compare data params (dataAtual, prazo)
       const comparison = isAfter(createdAt, todoRequest.deadline);
-      if (comparison) {
+      if (comparison && todoRequest.status !== 'Finalizado') {
         todoRequest.status = 'Atrasado';
-      } else if (todoRequest !== 'Finalizado') {
+      } else if (todoRequest.status !== 'Finalizado') {
         todoRequest.status = 'Aberto';
       }
 
+      if (todoRequest.status === 'Finalizado') {
+        todoRequest.finalizedAt = createdAt.toISOString();
+      }
+
       await this.todoModel.save(todoRequest);
-      todoRequest.message = 'Tarefa criada com sucesso!'
+      todoRequest.message = 'Tarefa criada com sucesso!';
       return todoRequest;
     } catch (err) {
       return err.message;
@@ -93,7 +109,7 @@ export class TodoService {
   // rota para dar update no TODO
   async updateTodo(todoUpdateRequest, id, userId) {
     try {
-      const newTodoValidation = await validateTodo(todoUpdateRequest, this.todoModel);
+      const newTodoValidation = await validateTodo(todoUpdateRequest);
       if (!newTodoValidation.ok) {
         const mainError = newTodoValidation.error;
         throw new Error && new (get(newTodoValidation, `errors.${mainError}`));
@@ -139,7 +155,7 @@ export class TodoService {
           id: id,
           userId: userId
         })
-        .execute()
+        .execute();
       return 'Tarefa alterada com sucesso!';
     } catch (err) {
       return err.message;
@@ -148,12 +164,16 @@ export class TodoService {
 
   // rota para o usuário conseguir ver apenas as suas tasks
   async getUserTodos(headerAuth) {
-    const idUser = this.authService.getUserIdInsideJwt(headerAuth);
-    return await this.todoModel.find({
-      where: {
-        userId: idUser
-      }
-    });
+    try {
+      const idUser = this.authService.getUserIdInsideJwt(headerAuth);
+      return await this.todoModel.find({
+        where: {
+          userId: idUser
+        }
+      });
+    } catch (err) {
+      return err.message;
+    }
   }
 
 }

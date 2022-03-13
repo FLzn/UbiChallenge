@@ -24,7 +24,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
   // Function called automatically by passport
   async validate(email: string, password: string): Promise<any> {
-
     const user = await this.authService.validateUser(email, password);
 
     if (!user) {
@@ -33,5 +32,4 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
     return user;
   }
-
 }
