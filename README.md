@@ -26,6 +26,31 @@
   <li>Foi utilizado no projeto o banco de dados MySQL</li>
 </ul>
 
+## Postman
+<ul>
+  <li>As rotas no postman são separadas por role e a classe que vai ser modificada, seguem as rotas:</li>
+  <ul>Admin/users
+    <li>
+      Rotas para o admin visualizar usuários em geral ou pelo e-mail
+    </li>
+  </ul>
+  <ul>Common/users
+    <li>
+      Rotas para admin ou user criarem um usuário e fazerem o login
+    </li>
+  </ul>
+  <ul>Admin/todo
+    <li>
+      Rotas para o admin listar os TODOS atrasados e para listar todos os itens TODO
+    </li>
+  </ul>
+  <ul>Common/todo
+    <li>
+      Rotas para o admin ou user criar um TODO, atualizar um TODO ou para o usuário listar todos os seus itens criados
+    </li>
+  </ul>
+</ul>
+
 ## Para a utilização do projeto
 <ul>
   <li>Ao inserir datas, o formato aceito pelo projeto é o de um timestamp, exemplo: "2021-04-11T13:34:00.000"</li>
