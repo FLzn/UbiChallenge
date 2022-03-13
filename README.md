@@ -29,26 +29,26 @@
 ## Postman
 <ul>
   <li>As rotas no postman são separadas por role e a classe que vai ser modificada, seguem as rotas:</li>
-  <li><ul>Admin/users
+  <ul> - Admin/users
     <li>
       Rotas para o admin visualizar usuários em geral ou pelo e-mail
     </li>
-  </ul></li>
-  <li><ul>Common/users
+  </ul>
+  <ul> - Common/users
     <li>
       Rotas para admin ou user criarem um usuário e fazerem o login
     </li>
-  </ul></li>
-  <li><ul>Admin/todo
+  </ul>
+  <ul> - Admin/todo
     <li>
       Rotas para o admin listar os TODOS atrasados e para listar todos os itens TODO
     </li>
-  </ul></li>
-  <li><ul>Common/todo
+  </ul>
+  <ul> - Common/todo
     <li>
       Rotas para o admin ou user criar um TODO, atualizar um TODO ou para o usuário listar todos os seus itens criados
     </li>
-  </ul></li>
+  </ul>
 </ul>
 
 ## Para a utilização do projeto
