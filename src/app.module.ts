@@ -24,7 +24,7 @@ import { RolesGuard } from './auth/roles.guard';
       entities: [
         "src/entities/**/*.ts"
       ],
-      synchronize: false,
+      synchronize: true,
       autoLoadEntities: true,
       logging: false
     }),

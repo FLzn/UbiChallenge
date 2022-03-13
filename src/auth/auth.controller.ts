@@ -5,6 +5,7 @@ import {
   UseGuards,
   Request
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 // endregion
 
 // region auth
@@ -18,8 +19,9 @@ export class AuthController {
     private authService: AuthService
   ) { }
 
-  @UseGuards(LocalAuthGuard)
   @Post('auth/login')
+  @ApiTags('users')
+  @UseGuards(LocalAuthGuard)
   async login(@Request() req): Promise<any> {
     return this.authService.login(req.user)
   }

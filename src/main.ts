@@ -13,7 +13,6 @@ async function bootstrap() {
     .setTitle('TODO API')
     .setDescription('API do teste backend da UbiStart')
     .setVersion('1.0')
-    .addTag('user')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

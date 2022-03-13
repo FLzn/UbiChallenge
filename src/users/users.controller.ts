@@ -27,10 +27,10 @@ export class UsersController {
     private readonly usersService: UsersService,
   ) { }
 
-  @ApiTags('users')
-  @UseGuards(JwtAuthGuard)
-  @Roles(Role.Admin)
   @Get()
+  @ApiTags('admin/users')
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard)
   async getUsers(): Promise<CreateUserDto[] | string> {
     return this.usersService.getAllUsers();
   }
@@ -40,14 +40,16 @@ export class UsersController {
   //   return this.usersService.getUser(id);
   // }
 
-  @ApiTags('users')
   @Get('/:email')
+  @ApiTags('admin/users')
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard)
   async getUserByEmail(@Param('email') email: string) {
     return this.usersService.getUserByEmail(email);
   }
 
-  @ApiTags('users')
   @Post()
+  @ApiTags('users')
   @UseInterceptors(FileInterceptor(''))
   async createUser(@Body() body: CreateUserDto): Promise<string> {
     return await this.usersService.createUser(body);

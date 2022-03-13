@@ -50,7 +50,7 @@ export class TodoController {
 
 // Rota para pegar atrasados -> PAGINADO
   @Get('/atrasados')
-  @ApiTags('todo')
+  @ApiTags('admin/todo')
   @ApiQuery({ name: 'page', required: false, type: Number})
   @ApiQuery({ name: 'limit', required: false, type: Number})
   @UseGuards(JwtAuthGuard)
@@ -68,7 +68,7 @@ export class TodoController {
 
   // ROTA TODOS OS TODOS -> PAGINADO
   @Get()
-  @ApiTags('todo')
+  @ApiTags('admin/todo')
   @ApiQuery({ name: 'page', required: false, type: Number})
   @ApiQuery({ name: 'limit', required: false, type: Number})
   @UseGuards(JwtAuthGuard)
@@ -84,15 +84,15 @@ export class TodoController {
   }
 
   @Post()
-  @ApiTags('todo')
+  @ApiTags('commom/todo')
   @ApiBody({ type: CreateTodoDto })
   @UseGuards(JwtAuthGuard)
   async createTodo(@Body() body: Partial<CreateTodoDto>, @Headers() headers) {
     return await this.todoService.createTodo(body, headers);
   }
 
-  @Put('/update/:id') // se der errado mudar pra post
-  @ApiTags('todo')
+  @Put('/update/:id')
+  @ApiTags('commom/todo')
   @UseGuards(JwtAuthGuard)
   async updateTodo(@Param('id') id: number, @Body() body, @Headers() headers) {
     const userId = this.authService.getUserIdInsideJwt(headers.authorization);
@@ -102,7 +102,7 @@ export class TodoController {
   }
 
   @Get('/users')
-  @ApiTags('todo')
+  @ApiTags('commom/todo')
   @UseGuards(JwtAuthGuard)
   async getUserTodos(@Headers() headers) {
     return await this.todoService.getUserTodos(headers.authorization);
