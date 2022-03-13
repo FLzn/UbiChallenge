@@ -46,7 +46,7 @@ export class TodoService {
       queryBuilder.orderBy('t.deadline', 'ASC');
       return paginate<Todo>(queryBuilder, options);
     } catch (err) {
-      return err.message;
+      throw new HttpException('Ocorreu um erro, tente novamente!', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -59,7 +59,7 @@ export class TodoService {
       queryBuilder.orderBy('t.deadline', 'ASC');
       return paginate<Todo>(queryBuilder, options);
     } catch (err) {
-      return err.message;
+      throw new HttpException('Ocorreu um erro, tente novamente!', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -100,7 +100,7 @@ export class TodoService {
 
       await this.todoModel.save(todoRequest);
       todoRequest.message = 'Tarefa criada com sucesso!';
-      return todoRequest;
+      throw new HttpException('TODO criado com sucesso!', HttpStatus.CREATED);
     } catch (err) {
       return err.message;
     }
@@ -156,7 +156,7 @@ export class TodoService {
           userId: userId
         })
         .execute();
-      return 'Tarefa alterada com sucesso!';
+      throw new HttpException('Usuário atualizado com sucesso!', HttpStatus.OK);
     } catch (err) {
       return err.message;
     }

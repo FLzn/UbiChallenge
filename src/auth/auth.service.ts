@@ -1,5 +1,5 @@
 // region nest
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 // endregion
 
@@ -33,10 +33,14 @@ export class AuthService {
   }
 
   async login(user: Partial<CreateUserDto>) {
-    const payload = user;
-
-    return {
-      access_token: this.jwtService.sign(payload)
+    try {
+      const payload = user;
+      
+      return {
+        access_token: this.jwtService.sign(payload)
+      }
+    } catch (err) {
+      throw new HttpException('Não foi possível realizar o login!', HttpStatus.BAD_REQUEST);
     }
   }
 
