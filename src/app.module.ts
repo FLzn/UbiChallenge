@@ -1,15 +1,21 @@
-import { TodoModule } from './to-do/todo.module';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-
+// nest
+import { APP_GUARD } from '@nestjs/core';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+// endregion
 
+// modules
+import { TodoModule } from './to-do/todo.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+// endregion
+
+// app && roles
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/roles.guard';
+// endregion
 
 @Module({
   imports: [
@@ -24,7 +30,7 @@ import { RolesGuard } from './auth/roles.guard';
       entities: [
         "src/entities/**/*.ts"
       ],
-      synchronize: true,
+      synchronize: false,
       autoLoadEntities: true,
       logging: false
     }),

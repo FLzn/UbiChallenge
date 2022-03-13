@@ -1,12 +1,9 @@
-// import { UpdateUserDto } from "src/users/dto/update-user.dto";
-// import { CreateUserDto } from "src/users/dto/create-user.dto";
 import { get } from 'lodash';
-// import UserErrorsDto from "../users/dto/user-errors.dto";
 
 import { CreateUserDto } from "src/users/dtos/create-user.dto";
 import UserErrorsDto from "src/users/dtos/user-errors.dtos";
 
-export async function validateUser(userRequest: CreateUserDto, usersModel: any): Promise<any> {
+export async function validateUser(userRequest: CreateUserDto, usersModel: any): Promise<UserErrorsDto> {
   const ERRORS: any = {
     email: '',
     name: '',

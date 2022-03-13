@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import CreateTodoDto from 'src/to-do/dtos/create-todo.dto';
 
-export async function validateTodo(todoRequest: CreateTodoDto, todoModel: any): Promise<any> {
+export async function validateTodo(todoRequest: CreateTodoDto): Promise<any> {
   const ERRORS: any = {
     id: '',
     title: '',
@@ -10,7 +10,6 @@ export async function validateTodo(todoRequest: CreateTodoDto, todoModel: any): 
     deadline: ''
   }
     if (todoRequest) {
-
       const { title, description, status, deadline, id } = todoRequest;
       
       if (!title) {
