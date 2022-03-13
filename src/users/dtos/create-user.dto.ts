@@ -1,3 +1,4 @@
+import { ApiProperty } from "@nestjs/swagger";
 import {
   IsEmail, 
   IsEnum, 
@@ -11,18 +12,22 @@ export class CreateUserDto {
   // @IsNumber()
   // id: number;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   name: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
   email: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   password: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   role?: Role;
 

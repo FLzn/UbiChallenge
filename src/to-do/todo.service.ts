@@ -6,18 +6,47 @@ import { Repository } from 'typeorm';
 import { Todo } from './entities/todo.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { isAfter, getDate } from '../utils/getDate'
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class TodoService {
   constructor(
     @InjectRepository(Todo)
     private todoModel: Repository<Todo>,
-    private authService: AuthService
+    private authService: AuthService,
+    private userService: UsersService,
   ) { }
 
+  // teste paginate
+  async paginate(options: IPaginationOptions): Promise<Pagination<Todo>> {
+    const qb = this.todoModel.createQueryBuilder('t');
+    qb.orderBy('t.id', 'DESC');
+
+    return paginate<Todo>(this.todoModel, options);
+  }
+
+  async getTodosAtrasados(options: IPaginationOptions, headers): Promise<Pagination<Todo>> {
+    const objUser: any = this.authService.getUserIdInsideJwt(headers.authorization);
+    const userId = objUser.id;
+    const queryBuilder = this.todoModel.createQueryBuilder('t');
+    queryBuilder.select(['t.title', 't.description', 't.deadline', 'users.email']);
+    queryBuilder.innerJoin("t.user", "users")
+    queryBuilder.where({
+      userId: userId,
+      status: "Atrasado"
+    });
+    queryBuilder.orderBy('t.deadline', 'ASC');
+    return paginate<Todo>(queryBuilder, options);
+  }
+
   // rota para o admin pegar todos os TODOS
-  async getTodo() {
-    return await this.todoModel.find();
+  async getTodo(options: IPaginationOptions): Promise<Pagination<Todo>> {
+    const queryBuilder = this.todoModel.createQueryBuilder('t');
+    queryBuilder.select(['t.title', 't.description', 't.deadline', 'users.email']);
+    queryBuilder.innerJoin("t.user", "users")
+    queryBuilder.orderBy('t.deadline', 'ASC');
+    return paginate<Todo>(queryBuilder, options);
   }
 
   // rota para criar todo
@@ -32,20 +61,21 @@ export class TodoService {
 
       // date js
       const newDeadline: string = getDate(todoRequest.deadline);
-      const createdAt: string = getDate();
+      // const createdAt: string = getDate();
+
+      const createdAt = new Date();
 
       // const jwt: any = this.authService.getJwt(token);
-      const token: string = headers.authorization.split(' ')[1];
-      const userId = this.authService.getUserIdInsideJwt(token);
+      const userId = this.authService.getUserIdInsideJwt(headers.authorization);
 
-      todoRequest.createdAt = createdAt;
-      todoRequest.updatedAt = createdAt;
+      todoRequest.createdAt = createdAt.toISOString();
+      todoRequest.updatedAt = createdAt.toISOString();
       todoRequest.userId = userId;
       todoRequest.deadline = newDeadline;
 
       // conferir se o prazo não está atrasado
       // Compare data params (dataAtual, prazo)
-      const comparison = isAfter(createdAt,todoRequest.deadline);
+      const comparison = isAfter(createdAt, todoRequest.deadline);
       if (comparison) {
         todoRequest.status = 'Atrasado';
       } else if (todoRequest !== 'Finalizado') {
@@ -53,7 +83,6 @@ export class TodoService {
       }
 
       await this.todoModel.save(todoRequest);
-      // console.log(todoRequest)
       todoRequest.message = 'Tarefa criada com sucesso!'
       return todoRequest;
     } catch (err) {
@@ -63,11 +92,11 @@ export class TodoService {
 
   // rota para dar update no TODO
   async updateTodo(todoUpdateRequest, id, userId) {
-    try {      
+    try {
       const newTodoValidation = await validateTodo(todoUpdateRequest, this.todoModel);
       if (!newTodoValidation.ok) {
         const mainError = newTodoValidation.error;
-        throw new Error && new(get(newTodoValidation, `errors.${mainError}`));
+        throw new Error && new (get(newTodoValidation, `errors.${mainError}`));
       }
 
       const oldTodo = await this.todoModel.findOne({
@@ -76,30 +105,30 @@ export class TodoService {
           userId: userId,
         }
       });
-    
+
       if (!oldTodo) {
         throw new HttpException('Você não tem permissão para alterar essa tarefa!', HttpStatus.FORBIDDEN);
+      } else if (oldTodo.status === 'Finalizado') {
+        throw new HttpException('A tarefa já foi concluída!', HttpStatus.ACCEPTED);
       }
+
+      const now = new Date();
 
       // verificar se o prazo está atrasado e se o status da tarefa mudar para finalizado, preencher o status
       if (todoUpdateRequest.status === 'Finalizado') {
-        todoUpdateRequest.finalizedAt = getDate();
+        todoUpdateRequest.finalizedAt = now.toISOString();
       }
-      
-      const now = new Date();
+
       const comparison = isAfter(now, todoUpdateRequest.deadline);
-      console.log(comparison);
       if (comparison && todoUpdateRequest.status !== 'Finalizado') {
         todoUpdateRequest.status = 'Atrasado';
-      } else if (todoUpdateRequest !== 'Finalizado' && oldTodo.status !== 'Finalizado') {
-        todoUpdateRequest.status = 'Aberto';
-      }      
-      todoUpdateRequest.updatedAt = getDate();
+      }
+      todoUpdateRequest.updatedAt = now.toISOString();
 
       await this.todoModel.createQueryBuilder()
         .update(Todo)
-        .set({ 
-          status: todoUpdateRequest.status, 
+        .set({
+          status: todoUpdateRequest.status,
           title: todoUpdateRequest.title,
           description: todoUpdateRequest.description,
           updatedAt: todoUpdateRequest.updatedAt,

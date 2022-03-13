@@ -51,6 +51,13 @@ export class UsersService {
     }
   }
 
+  async getUserById(id: number) {
+    return this.usersModel.findOne({
+      where: {
+        id: id
+      }
+    })
+  }
 
   async createUser(userRequest: CreateUserDto) {
     try {

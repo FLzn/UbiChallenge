@@ -9,6 +9,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/custom-decorators/roles.decorator';
 import { Role } from 'src/enums/role.enum';
@@ -26,6 +27,7 @@ export class UsersController {
     private readonly usersService: UsersService,
   ) { }
 
+  @ApiTags('users')
   @UseGuards(JwtAuthGuard)
   @Roles(Role.Admin)
   @Get()
@@ -38,11 +40,13 @@ export class UsersController {
   //   return this.usersService.getUser(id);
   // }
 
+  @ApiTags('users')
   @Get('/:email')
   async getUserByEmail(@Param('email') email: string) {
     return this.usersService.getUserByEmail(email);
   }
 
+  @ApiTags('users')
   @Post()
   @UseInterceptors(FileInterceptor(''))
   async createUser(@Body() body: CreateUserDto): Promise<string> {
