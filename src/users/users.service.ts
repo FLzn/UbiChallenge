@@ -1,5 +1,5 @@
 // region nest
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { validateUser } from 'src/validations/user';
 // endregion
@@ -30,9 +30,10 @@ export class UsersService {
   async getAllUsers(): Promise<CreateUserDto[] | string> {
     try {
       const users = await this.usersModel.find();
-      return users ? users : 'Usuários não encontrados!';
+      if (users) return users;
+      throw new HttpException('Usuários não encontrados!', HttpStatus.BAD_REQUEST);
     } catch (err) {
-      return err.message;
+      throw new HttpException('Ocorreu um erro, tente novamente!', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -45,7 +46,8 @@ export class UsersService {
           }
         }
       );
-      return user ? user : 'Usuário não encontrado!';
+      if (user) return user;
+      throw new HttpException('Usuário não encontrado!', HttpStatus.BAD_REQUEST);
     } catch (err) {
       return err;
     }
