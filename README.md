@@ -3,10 +3,12 @@
 ## Docker e Banco de dados
 <ul>
   <li>Utilizando o docker, baixar a imagem do mysql com o comando: docker pull mysql</li>
-  <li>criar um container com a imagem do mysql, exemplo: docker run challenge-ubi -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 -d mysql</li>
+  <li>criar um container com a imagem do mysql, exemplo: docker run --name challenge-ubistart -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 -d mysql</li>
   <li>Rodar o container criado</li>
   <li>Adicionar uma nova conexão no dbeaver com mysql, colocando as informações do container criado acima</li>
   <li>Caso necessário, ir em "Driver properties" e mudar a chave "allowPublicKeyRetrieval" de false para true</li>
+  <li>Caso necessário, ir em "Driver properties" e mudar a chave "allowPublicKeyRetrieval" de false para true</li>
+  <li>Dentro da conexão criada, criar um banco com o nome "challenge-ubi"</li>
 </ul>
 
 ## Início do projeto
